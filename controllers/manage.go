@@ -14,6 +14,11 @@ type ManageBuilder struct {
 // Build takes th GroupName from the SysBuilder struct
 // creates a group and adds the endpoints to it
 func (b *ManageBuilder) Build(app *fiber.App) {
+
+	if b.GroupName == "" {
+		panic("GroupName is empty")
+	}
+
 	group := app.Group(b.GroupName)
 
 	group.Get("/", b.getResults)

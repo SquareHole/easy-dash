@@ -19,6 +19,10 @@ type ConfigBuilder struct {
 // creates a group and adds the endpoints to it
 func (b *ConfigBuilder) Build(app *fiber.App) {
 
+	if b.GroupName == "" {
+		panic("GroupName is empty")
+	}
+
 	group := app.Group(b.GroupName)
 	group.Get("/", b.getConfig)
 	group.Get("/schedules", b.getScheduledJobs)
