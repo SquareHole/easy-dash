@@ -20,8 +20,7 @@ func init() {
 	}
 }
 
-// https://localhost:5341
-
+// main is the entry point of the application
 func main() {
 
 	var wg sync.WaitGroup
@@ -37,6 +36,9 @@ func main() {
 		}
 	}()
 
-	rs := scheduling.Scehdule()
+	// Create a new scheduler
+	rs := scheduling.New()
+
+	// Start the web server =, passing in the scehduler
 	log.Fatal(api.Serve(rs))
 }

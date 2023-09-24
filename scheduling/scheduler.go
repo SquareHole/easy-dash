@@ -2,7 +2,6 @@ package scheduling
 
 import (
 	"log/slog"
-	"time"
 
 	"github.com/bamzi/jobrunner"
 	"github.com/robfig/cron/v3"
@@ -22,13 +21,25 @@ type (
 	}
 )
 
+// New creates a new scheduler
+func New() *Scheduler {
+	slog.Info("Scheduling jobs")
+
+	scheduler := newScheduler()
+
+	slog.Info("Schedules", "schedules", scheduler.GetSchedules())
+
+	scheduler.Start()
+	return scheduler
+}
+
 // Run is the function that will be called by the scheduler
 func (s *Schedule) Run() {
 	s.Job()
 }
 
-// NewScheduler creates a new scheduler
-func NewScheduler() *Scheduler {
+// newScheduler creates a new scheduler
+func newScheduler() *Scheduler {
 	return &Scheduler{}
 }
 
@@ -40,10 +51,7 @@ func (s *Scheduler) Start() {
 	for _, schedule := range s.Schedules {
 		err := jobrunner.Schedule(schedule.JobSchedule, schedule)
 
-		e := jobrunner.Entries()
-		j := e[len(e)-1]
-
-		schedule.ID = j.ID
+		attachId(schedule)
 
 		slog.Info("Scheduling job", "schedule", schedule)
 		if err != nil {
@@ -55,6 +63,15 @@ func (s *Scheduler) Start() {
 // AddSchedule adds a new schedule to the scheduler
 func (s *Scheduler) AddSchedule(message string, jobSchedule string, job func()) {
 	s.Schedules = append(s.Schedules, &Schedule{Name: message, JobSchedule: jobSchedule, Job: job})
+
+	// Get the last schedule
+	schedule := s.Schedules[len(s.Schedules)-1]
+	err := jobrunner.Schedule(schedule.JobSchedule, schedule)
+	if err != nil {
+		slog.Error("Error while scheduling job", "error", err.Error())
+	}
+
+	attachId(schedule)
 }
 
 // GetSchedules returns all schedules
@@ -88,20 +105,9 @@ func (s *Scheduler) StopJobById(id int) {
 	}
 }
 
-func Scehdule() *Scheduler {
-	slog.Info("Scheduling jobs")
+func attachId(schedule *Schedule) {
+	e := jobrunner.Entries()
+	j := e[len(e)-1]
 
-	scheduler := NewScheduler()
-
-	scheduler.AddSchedule("Poke", "@every 5s", func() {
-		slog.Info("Scheduled 5s Poked...", "time", time.Now())
-	})
-	scheduler.AddSchedule("Poke2", "@every 7s", func() {
-		slog.Info("Scheduled 7s Poked...", "time", time.Now())
-	})
-
-	slog.Info("Schedules", "schedules", scheduler.GetSchedules())
-
-	scheduler.Start()
-	return scheduler
+	schedule.ID = j.ID
 }

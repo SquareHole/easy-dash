@@ -3,6 +3,7 @@ package controllers
 import (
 	"log/slog"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/squarehole/easydash/data"
@@ -26,6 +27,8 @@ func (b *ConfigBuilder) Build(app *fiber.App) {
 	group := app.Group(b.GroupName)
 	group.Get("/", b.getConfig)
 	group.Get("/schedules", b.getScheduledJobs)
+
+	group.Post("/schedule/:duration", b.addSchedule)
 
 	group.Delete("/schedule/:jobId", b.stopScheduledJob)
 
@@ -59,5 +62,15 @@ func (b *ConfigBuilder) stopScheduledJob(c *fiber.Ctx) error {
 
 	slog.Info("Stopping job", "jobId", jobId)
 	b.Scheduler.StopJobById(jobId)
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func (b *ConfigBuilder) addSchedule(c *fiber.Ctx) error {
+
+	duration := c.Params("duration")
+
+	b.Scheduler.AddSchedule("Test", "@every "+duration, func() {
+		slog.Info("Running job added later", "duration", duration, "time", time.Now())
+	})
 	return c.SendStatus(fiber.StatusOK)
 }
