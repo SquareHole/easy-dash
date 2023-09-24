@@ -9,15 +9,18 @@ import (
 	"github.com/squarehole/easydash/scheduling"
 )
 
+// ConfigBuilder is a struct that holds the configutation for the Controller
 type ConfigBuilder struct {
 	GroupName string
 	Scheduler *scheduling.Scheduler
 }
 
+// Build takes th GroupName from the SysBuilder struct
+// creates a group and adds the endpoints to it
 func (b *ConfigBuilder) Build(app *fiber.App) {
 
 	group := app.Group(b.GroupName)
-	group.Get("/", getConfig)
+	group.Get("/", b.getConfig)
 	group.Get("/schedules", b.getScheduledJobs)
 
 	group.Delete("/schedule/:jobId", b.stopScheduledJob)
@@ -25,7 +28,7 @@ func (b *ConfigBuilder) Build(app *fiber.App) {
 	slog.Info("ConfigBuilder built", "group", b.GroupName)
 }
 
-func getConfig(c *fiber.Ctx) error {
+func (b *ConfigBuilder) getConfig(c *fiber.Ctx) error {
 
 	data, err := data.GetAllConfigs()
 	if err != nil {

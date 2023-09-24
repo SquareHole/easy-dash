@@ -6,14 +6,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// ManageBuilder is a struct that holds the configutation for the Controller
 type ManageBuilder struct {
 	GroupName string
 }
 
+// Build takes th GroupName from the SysBuilder struct
+// creates a group and adds the endpoints to it
 func (b *ManageBuilder) Build(app *fiber.App) {
 	group := app.Group(b.GroupName)
 
-	group.Get("/", getResults)
+	group.Get("/", b.getResults)
 
 	slog.Info("ManageBuilder built", "group", b.GroupName)
 
@@ -21,7 +24,7 @@ func (b *ManageBuilder) Build(app *fiber.App) {
 
 // getResults sample comment for testing with
 // IDE themes
-func getResults(c *fiber.Ctx) error {
+func (b *ManageBuilder) getResults(c *fiber.Ctx) error {
 	slog.Debug("getResults")
 	return c.SendString("We are managers...")
 }
