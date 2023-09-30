@@ -47,13 +47,13 @@ func (b *ConfigBuilder) getConfig(c *fiber.Ctx) error {
 }
 
 func (b *ConfigBuilder) getScheduledJobs(c *fiber.Ctx) error {
-	slog.Info("getScheduledJobs")
+	slog.Debug("getScheduledJobs")
 	jobs := &b.Scheduler.Schedules
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"jobs": jobs})
 }
 
 func (b *ConfigBuilder) stopScheduledJob(c *fiber.Ctx) error {
-	slog.Info("stopScheduledJob")
+	slog.Debug("stopScheduledJob")
 	jobId, err := strconv.Atoi(c.Params("jobId"))
 	if err != nil {
 		slog.Error("Error while converting jobId", "error", err.Error())
@@ -70,7 +70,7 @@ func (b *ConfigBuilder) addSchedule(c *fiber.Ctx) error {
 	duration := c.Params("duration")
 
 	b.Scheduler.AddSchedule("Test", "@every "+duration, func() {
-		slog.Info("Running job added later", "duration", duration, "time", time.Now())
+		slog.Debug("Running job added later", "duration", duration, "time", time.Now())
 	})
 	return c.SendStatus(fiber.StatusOK)
 }

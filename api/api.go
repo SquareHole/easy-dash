@@ -3,13 +3,11 @@ package api
 import (
 	"os"
 	"sync"
-	"time"
 
 	"log/slog"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/lmittmann/tint"
 	slogfiber "github.com/samber/slog-fiber"
 	"github.com/squarehole/easydash/controllers"
 	"github.com/squarehole/easydash/scheduling"
@@ -20,14 +18,14 @@ var RS *scheduling.Scheduler
 func Serve(s *scheduling.Scheduler) error {
 
 	RS = s
-	w := os.Stderr
+	//w := os.Stderr
 
-	slog.SetDefault(slog.New(
-		tint.NewHandler(w, &tint.Options{
-			Level:      slog.LevelDebug,
-			TimeFormat: time.Kitchen,
-		}),
-	))
+	// slog.SetDefault(slog.New(
+	// 	tint.NewHandler(w, &tint.Options{
+	// 		Level:      slog.LevelDebug,
+	// 		TimeFormat: time.Kitchen,
+	// 	}),
+	// ))
 
 	logger := slog.Default()
 
