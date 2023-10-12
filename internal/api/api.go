@@ -9,8 +9,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	slogfiber "github.com/samber/slog-fiber"
-	"github.com/squarehole/easydash/controllers"
-	"github.com/squarehole/easydash/scheduling"
+	"github.com/squarehole/easydash/internal/controllers"
+	"github.com/squarehole/easydash/internal/scheduling"
 )
 
 var RS *scheduling.Scheduler

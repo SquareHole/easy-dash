@@ -11,9 +11,9 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/lmittmann/tint"
-	"github.com/squarehole/easydash/api"
-	"github.com/squarehole/easydash/data"
-	"github.com/squarehole/easydash/scheduling"
+	"github.com/squarehole/easydash/internal/api"
+	"github.com/squarehole/easydash/internal/data"
+	"github.com/squarehole/easydash/internal/scheduling"
 )
 
 func init() {

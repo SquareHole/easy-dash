@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/squarehole/easydash/data"
-	"github.com/squarehole/easydash/scheduling"
+	"github.com/squarehole/easydash/internal/data"
+	"github.com/squarehole/easydash/internal/scheduling"
 )
 
 // ConfigBuilder is a struct that holds the configutation for the Controller
