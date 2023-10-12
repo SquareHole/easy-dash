@@ -13,22 +13,18 @@ import (
 	"github.com/squarehole/easydash/internal/scheduling"
 )
 
+// RS is a global variable that holds the scheduler instance
 var RS *scheduling.Scheduler
 
+// Serve starts the web server and listens for incoming requests
 func Serve(s *scheduling.Scheduler) error {
 
+	// Set the global scheduler instance
 	RS = s
-	//w := os.Stderr
-
-	// slog.SetDefault(slog.New(
-	// 	tint.NewHandler(w, &tint.Options{
-	// 		Level:      slog.LevelDebug,
-	// 		TimeFormat: time.Kitchen,
-	// 	}),
-	// ))
 
 	logger := slog.Default()
 
+	// Create a new Fiber app
 	app := fiber.New()
 
 	// Add middleware
@@ -39,11 +35,13 @@ func Serve(s *scheduling.Scheduler) error {
 		AllowOrigins:     "*",
 	}))
 
+	// Add a hook to log incoming requests
 	app.Hooks().OnRoute(func(r fiber.Route) error {
 		slog.Debug("Route", "method", r.Method, "path", r.Path)
 		return nil
 	})
 
+	// Bind the routes to the app
 	bindRoutes(app)
 
 	// Get the listening port from the environment
@@ -59,12 +57,15 @@ func Serve(s *scheduling.Scheduler) error {
 		port = ":" + port
 	}
 
+	// Start listening for incoming requests
 	return app.Listen(port)
 }
 
+// bindRoutes binds the route handlers to the app
 func bindRoutes(app *fiber.App) {
 	var wg sync.WaitGroup
 
+	// Create an array of controller builders
 	var builders = []controllers.Builder{
 		&controllers.ConfigBuilder{GroupName: "/_config", Scheduler: RS},
 		&controllers.SysBuilder{GroupName: "/_sys"},
@@ -75,12 +76,13 @@ func bindRoutes(app *fiber.App) {
 		// Increment the WaitGroup counter.
 		wg.Add(1)
 
-		// Launch a goroutine to registrer the route handlers.
+		// Launch a goroutine to register the route handlers.
 		go func(builder controllers.Builder) {
 			defer wg.Done()
 			builder.Build(app)
 		}(builder)
 	}
 
+	// Wait for all the goroutines to finish
 	wg.Wait()
 }

@@ -35,8 +35,10 @@ func main() {
 
 		setupLogger()
 
+		// Initialize the database
 		err := data.InitDatabase()
 		if err != nil {
+			// Log the error if database initialization fails
 			slog.Error("Error while initializing the database", "error", err.Error())
 			panic(err)
 		}
@@ -45,12 +47,13 @@ func main() {
 	// Create a new scheduler
 	rs := scheduling.New()
 
-	// Start the web server =, passing in the scehduler
+	// Start the web server, passing in the scheduler
 	log.Fatal(api.Serve(rs))
 }
 
 func setupLogger() {
 
+	// Check if logging to file is enabled
 	logToFile, err := strconv.ParseBool(os.Getenv("LOG_TO_FILE"))
 	if err != nil {
 		logToFile = false
@@ -58,6 +61,7 @@ func setupLogger() {
 
 	if logToFile {
 
+		// If logging to file is enabled, create a new log file
 		fileName := os.Getenv("LOG_FILE")
 		fmt.Println(fileName)
 		file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -67,6 +71,7 @@ func setupLogger() {
 
 		defer file.Close()
 
+		// Create a new slog logger with the log file
 		logHandler := slog.NewTextHandler(file, &slog.HandlerOptions{
 			Level:     slog.LevelDebug,
 			AddSource: true,
@@ -76,6 +81,7 @@ func setupLogger() {
 		slog.SetDefault(logger)
 
 	} else {
+		// If logging to file is not enabled, create a new tint logger
 		tintHandler := tint.NewHandler(os.Stderr, &tint.Options{
 			Level:     slog.LevelDebug,
 			AddSource: true,
