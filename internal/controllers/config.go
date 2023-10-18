@@ -29,6 +29,7 @@ func (b *ConfigBuilder) Build(app *fiber.App) {
 	group.Get("/schedules", b.getScheduledJobs)
 
 	group.Post("/schedule/:duration", b.addSchedule)
+	group.Put("/schedule/:jobId", b.updateSchedule)
 
 	group.Delete("/schedule/:jobId", b.stopScheduledJob)
 
@@ -72,5 +73,16 @@ func (b *ConfigBuilder) addSchedule(c *fiber.Ctx) error {
 	b.Scheduler.AddSchedule("Test", "@every "+duration, func() {
 		slog.Debug("Running job added later", "duration", duration, "time", time.Now())
 	})
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func (b *ConfigBuilder) updateSchedule(c *fiber.Ctx) error {
+	jobId, err := strconv.Atoi(c.Params("jobId"))
+	if err != nil {
+		slog.Error("JobId not supplied")
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	slog.Debug("Updating job", "jobId", jobId)
 	return c.SendStatus(fiber.StatusOK)
 }

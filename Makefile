@@ -1,8 +1,15 @@
 
 BIN=go
+OUTPATH=./bin
 
-build:
-	${BIN} build -v ./...
+build: create_build_folder copy_env
+	${BIN} build -v -o ${OUTPATH} ./...
+
+create_build_folder:
+	mkdir -p ${OUTPATH}
+
+copy_env:
+	cp ./.env ${OUTPATH}
 
 test:
 	go test -race -v ./...
